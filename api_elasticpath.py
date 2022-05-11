@@ -9,7 +9,7 @@ FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 def get_token(client_id):
     data = {
-        'client_id': f'{client_id}',
+        'client_id': client_id,
         'grant_type': 'implicit'
     }
     url = 'https://api.moltin.com/oauth/access_token'

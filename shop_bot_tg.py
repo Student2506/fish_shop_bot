@@ -72,7 +72,7 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     quantity_row = []
     for quantity in (1, 5, 10):
         quantity_row.append(InlineKeyboardButton(
-            f'{quantity} шт.', callback_data=f'{quantity}'
+            f'{quantity} шт.', callback_data=quantity
         ))
     keyboard = [quantity_row]
 
