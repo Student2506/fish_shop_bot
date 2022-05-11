@@ -47,7 +47,7 @@ def get_fish_picture_url(id, access_token):
     return response.json().get('data').get('link').get('href')
 
 
-def get_cart(url, access_token, client_id='525727537'):
+def get_cart(url, access_token, client_id):
     headers = {
         'Authorization': f'Bearer {access_token}',
     }
