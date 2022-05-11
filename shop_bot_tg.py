@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CallbackQueryHandler
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+from textwrap import dedent
 
 from api_elasticpath import add_proudct_to_cart, create_customer_record
 from api_elasticpath import get_cart, get_cart_products, get_catalog
@@ -56,13 +57,20 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
         access_token
     )
     logger.debug(fish)
+    price_formatted = (
+        fish
+        .get('meta')
+        .get('display_price')
+        .get('with_tax')
+        .get('formatted')
+    )
     fish_detail = f'''
     {fish.get('name')}
 
-{fish.get('meta').get('display_price').get('with_tax').get('formatted')} per kg
-{fish.get('meta').get('stock').get('level')}kg on stock
+    {price_formatted} per kg
+    {fish.get('meta').get('stock').get('level')}kg on stock
 
-{fish.get('description')}
+    {fish.get('description')}
     '''
     context.bot.delete_message(
         chat_id=query.message.chat.id,
@@ -91,11 +99,11 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     if fish_picture:
         url = get_fish_picture_url(fish_picture, access_token)
         query.message.reply_photo(
-            url, caption=fish_detail, reply_markup=reply_markup
+            url, caption=dedent(fish_detail), reply_markup=reply_markup
         )
     else:
         query.message.reply_text(
-            text=fish_detail, reply_markup=reply_markup
+            text=dedent(fish_detail), reply_markup=reply_markup
         )
     return 'HANDLE_DESCRIPTION'
 
