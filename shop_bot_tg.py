@@ -27,7 +27,10 @@ FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 def start(update: Update, context: CallbackContext) -> str:
     client_id = os.getenv('FISH_SHOP_CLIENT_ID')
-    access_token = get_token(client_id).get('access_token', None)
+    access_token = get_token(
+        'https://api.moltin.com/oauth/access_token',
+        client_id
+    ).get('access_token', None)
     logger.debug(f'access_token: {access_token}')
     goods = get_catalog('https://api.moltin.com/v2/products', access_token)
     logger.debug(f'goods: {goods}')
@@ -44,7 +47,10 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     query = update.callback_query
     logger.debug(query.data)
     client_id = os.getenv('FISH_SHOP_CLIENT_ID')
-    access_token = get_token(client_id).get('access_token', None)
+    access_token = get_token(
+        'https://api.moltin.com/oauth/access_token',
+        client_id
+    ).get('access_token', None)
     fish = get_product_detail(
         'https://api.moltin.com/v2/products/',
         query.data,
@@ -89,9 +95,13 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
             .get("data")
             .get("id")
         )
-    # If fish_picture_id is None then respond with text-only message
+
     if fish_picture_id:
-        url = get_fish_picture_url(fish_picture_id, access_token)
+        url = get_fish_picture_url(
+            'https://api.moltin.com/v2/files/',
+            fish_picture_id,
+            access_token
+        )
         query.message.reply_photo(
             url, caption=dedent(fish_detail), reply_markup=reply_markup
         )
@@ -106,7 +116,10 @@ def handle_description(update: Update, context: CallbackContext) -> str:
     query = update.callback_query
     good = context.user_data.get("chosen")
     client_id = os.getenv('FISH_SHOP_CLIENT_ID')
-    access_token = get_token(client_id).get('access_token', None)
+    access_token = get_token(
+        'https://api.moltin.com/oauth/access_token',
+        client_id
+    ).get('access_token', None)
     logger.debug(f'access_token: {access_token}')
     user_choice = query.data
     logger.debug(f'handle_desc: {user_choice}')
@@ -190,7 +203,10 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
     query = update.callback_query
     logger.debug(f'Handle CART {query.data}')
     client_id = os.getenv('FISH_SHOP_CLIENT_ID')
-    access_token = get_token(client_id).get('access_token', None)
+    access_token = get_token(
+        'https://api.moltin.com/oauth/access_token',
+        client_id
+    ).get('access_token', None)
     if query.data in ('menu', 'Back'):
         logger.debug('going to menu')
         goods = get_catalog('https://api.moltin.com/v2/products', access_token)
@@ -262,7 +278,10 @@ def waiting_email(update: Update, context: CallbackContext) -> None:
     users_reply = update.message.text
     update.message.reply_text(users_reply)
     client_id = os.getenv('FISH_SHOP_CLIENT_ID')
-    access_token = get_token(client_id).get('access_token', None)
+    access_token = get_token(
+        'https://api.moltin.com/oauth/access_token',
+        client_id
+    ).get('access_token', None)
     user_to_order = (
         f'{update.effective_user.last_name} {update.effective_user.first_name}'
     )

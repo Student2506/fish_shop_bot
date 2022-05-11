@@ -6,12 +6,11 @@ logger = logging.getLogger(__name__)
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 
-def get_token(client_id):
+def get_token(url, client_id):
     data = {
         'client_id': client_id,
         'grant_type': 'implicit'
     }
-    url = 'https://api.moltin.com/oauth/access_token'
     response = requests.post(url, data=data)
     response.raise_for_status()
     return response.json()
@@ -35,12 +34,12 @@ def get_product_detail(url, product_id, access_token):
     return response.json().get('data')
 
 
-def get_fish_picture_url(picture_id, access_token):
+def get_fish_picture_url(url, picture_id, access_token):
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
     response = requests.get(
-        f'https://api.moltin.com/v2/files/{picture_id}', headers=headers
+        f'{url}{picture_id}', headers=headers
     )
     response.raise_for_status()
     return response.json().get('data').get('link').get('href')
