@@ -2,9 +2,7 @@ import logging
 import os
 
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
 logger = logging.getLogger(__name__)
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
