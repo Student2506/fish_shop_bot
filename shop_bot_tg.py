@@ -113,6 +113,29 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     return 'HANDLE_DESCRIPTION'
 
 
+def build_list_of_fishes(fishes):
+    keyboard = []
+    product_cart = ''
+    for fish in fishes:
+        price = fish.get('meta').get('display_price').get('with_tax')
+        product_cart += f'''
+            {fish.get('name')}
+            {fish.get('description')}
+            {price.get('unit').get('formatted')} per kg
+            {fish.get('quantity')}kg in cart for {
+                price.get('value').get('formatted')
+            }
+
+            '''
+        logger.debug(fish)
+        keyboard.append([InlineKeyboardButton(
+            f"Убрать из корзины {fish.get('name')}",
+            callback_data=fish.get('id')
+        )])
+
+    return product_cart, keyboard
+
+
 def handle_description(update: Update, context: CallbackContext) -> str:
     query = update.callback_query
     good = context.user_data.get("chosen")
@@ -159,24 +182,8 @@ def handle_description(update: Update, context: CallbackContext) -> str:
             access_token,
             str(update.effective_user.id)
         )
-        product_cart = ''
-        keyboard = []
-        for fish in products.get('data'):
-            price = fish.get('meta').get('display_price').get('with_tax')
-            product_cart += f'''
-                {fish.get('name')}
-                {fish.get('description')}
-                {price.get('unit').get('formatted')} per kg
-                {fish.get('quantity')}kg in cart for {
-                    price.get('value').get('formatted')
-                }
 
-                '''
-            logger.debug(fish)
-            keyboard.append([InlineKeyboardButton(
-                f"Убрать из корзины {fish.get('name')}",
-                callback_data=fish.get('id')
-            )])
+        product_cart, keyboard = build_list_of_fishes(products.get('data'))
         keyboard.append(
             [InlineKeyboardButton('В меню', callback_data='menu'), ]
         )
@@ -235,27 +242,7 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
             access_token,
             str(update.effective_user.id)
         )
-        product_cart = ''
-        keyboard = []
-        for fish in products.get('data'):
-            price = fish.get('meta').get('display_price').get('with_tax')
-            product_cart += f'''
-            {fish.get('name')}
-            {fish.get('description')}
-
-            {price.get('unit').get('formatted')} per kg
-            {fish.get('quantity')}kg in cart for {
-                price.get('value').get('formatted')
-            }
-
-
-            '''
-
-            logger.debug(fish)
-            keyboard.append([InlineKeyboardButton(
-                f"Убрать из корзины {fish.get('name')}",
-                callback_data=fish.get('id')
-            )])
+        product_cart, keyboard = build_list_of_fishes(products.get('data'))
         keyboard.append(
             [InlineKeyboardButton('В меню', callback_data='menu'), ]
         )
