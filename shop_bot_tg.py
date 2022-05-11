@@ -221,12 +221,18 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
         product_cart = ''
         keyboard = []
         for fish in products.get('data'):
-            product_cart += fish.get('name') + '\n'
-            product_cart += fish.get('description') + '\n'
             price = fish.get('meta').get('display_price').get('with_tax')
-            product_cart += f"{price.get('unit').get('formatted')} per kg\n"
-            product_cart += (f"{fish.get('quantity')}kg in cart for "
-                             f"{price.get('value').get('formatted')}\n\n")
+            product_cart += f'''
+            {fish.get('name')}
+            {fish.get('description')}
+
+            {price.get('unit').get('formatted')} per kg
+            {fish.get('quantity')}kg in cart for {
+                price.get('value').get('formatted')
+            }
+
+
+            '''
 
             logger.debug(fish)
             keyboard.append([InlineKeyboardButton(
@@ -246,7 +252,9 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
             .get('formatted')
         )
         product_cart += f"Total: {price_formatted}"
-        query.message.reply_text(text=product_cart, reply_markup=reply_markup)
+        query.message.reply_text(
+            text=dedent(product_cart), reply_markup=reply_markup
+        )
         return 'HANDLE_CART'
 
 
