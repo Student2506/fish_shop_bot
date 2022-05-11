@@ -226,6 +226,32 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
         query.message.reply_text('Please choose: ', reply_markup=reply_markup)
         return 'HANDLE_MENU'
     elif query.data == 'Basket':
+        products = get_cart_products(
+            'https://api.moltin.com/v2/carts/',
+            access_token,
+            str(update.effective_user.id)
+        )
+
+        product_cart, keyboard = build_list_of_fishes(products.get('data'))
+        keyboard.append(
+            [InlineKeyboardButton('В меню', callback_data='menu'), ]
+        )
+        keyboard.append(
+            [InlineKeyboardButton('Оплата', callback_data='pay'), ]
+        )
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        total_formatted = (
+            products
+            .get('meta')
+            .get('display_price')
+            .get('with_tax')
+            .get('formatted')
+        )
+        product_cart += f"Total: {total_formatted}"
+        query.message.reply_text(
+            text=dedent(product_cart), reply_markup=reply_markup
+        )
         return 'HANDLE_CART'
     elif query.data == 'pay':
         query.message.reply_text('Mail to send?')
