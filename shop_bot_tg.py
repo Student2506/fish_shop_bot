@@ -82,15 +82,16 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     if fish.get("relationships"):
-        fish_picture = (
+        fish_picture_id = (
             fish
             .get("relationships")
             .get("main_image")
             .get("data")
             .get("id")
         )
-    if fish_picture:
-        url = get_fish_picture_url(fish_picture, access_token)
+    # If fish_picture_id is None then respond with text-only message
+    if fish_picture_id:
+        url = get_fish_picture_url(fish_picture_id, access_token)
         query.message.reply_photo(
             url, caption=dedent(fish_detail), reply_markup=reply_markup
         )
@@ -107,11 +108,11 @@ def handle_description(update: Update, context: CallbackContext) -> str:
     client_id = os.getenv('FISH_SHOP_CLIENT_ID')
     access_token = get_token(client_id).get('access_token', None)
     logger.debug(f'access_token: {access_token}')
-    response = query.data
-    logger.debug(f'handle_desc: {response}')
+    user_choice = query.data
+    logger.debug(f'handle_desc: {user_choice}')
     logger.debug(f'handle_desc: {query}')
     logger.debug(f'handle_desc: (choses) {good}')
-    if response == 'Back':
+    if user_choice == 'Back':
         goods = get_catalog('https://api.moltin.com/v2/products', access_token)
         logger.debug(f'goods: {goods}')
         keyboard = [[InlineKeyboardButton(
@@ -121,9 +122,9 @@ def handle_description(update: Update, context: CallbackContext) -> str:
         logger.debug(query.message)
         query.message.reply_text('Please choose: ', reply_markup=reply_markup)
         return 'HANDLE_MENU'
-    elif response.isnumeric() and int(response) in (1, 5, 10):
-        logger.debug(response)
-        qunatity = int(response)
+    elif user_choice.isnumeric() and int(user_choice) in (1, 5, 10):
+        logger.debug(user_choice)
+        qunatity = int(user_choice)
         cart = get_cart(
             'https://api.moltin.com/v2/carts/',
             access_token,
@@ -139,23 +140,24 @@ def handle_description(update: Update, context: CallbackContext) -> str:
         )
         logger.debug(f'added products: {cart}')
     else:
-        logger.debug(f'elseeee {response}')
         products = get_cart_products(
             'https://api.moltin.com/v2/carts/',
             access_token,
             str(update.effective_user.id)
         )
-        response = ''
+        product_cart = ''
         keyboard = []
         for fish in products.get('data'):
-            response += fish.get('name') + '\n'
-            response += fish.get('description') + '\n'
             price = fish.get('meta').get('display_price').get('with_tax')
-            response += f"{price.get('unit').get('formatted')} per kg\n"
-            response += (
-                f"{fish.get('quantity')}kg in cart for "
-                f"{price.get('value').get('formatted')}\n\n")
+            product_cart += f'''
+                {fish.get('name')}
+                {fish.get('description')}
+                {price.get('unit').get('formatted')} per kg
+                {fish.get('quantity')}kg in cart for {
+                    price.get('value').get('formatted')
+                }
 
+                '''
             logger.debug(fish)
             keyboard.append([InlineKeyboardButton(
                 f"Убрать из корзины {fish.get('name')}",
@@ -176,8 +178,10 @@ def handle_description(update: Update, context: CallbackContext) -> str:
             .get('with_tax')
             .get('formatted')
         )
-        response += f"Total: {total_formatted}"
-        query.message.reply_text(text=response, reply_markup=reply_markup)
+        product_cart += f"Total: {total_formatted}"
+        query.message.reply_text(
+            text=dedent(product_cart), reply_markup=reply_markup
+        )
         logger.debug(f'elseseee2 {products}')
     return 'HANDLE_CART'
 
@@ -214,15 +218,15 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
             access_token,
             str(update.effective_user.id)
         )
-        response = ''
+        product_cart = ''
         keyboard = []
         for fish in products.get('data'):
-            response += fish.get('name') + '\n'
-            response += fish.get('description') + '\n'
+            product_cart += fish.get('name') + '\n'
+            product_cart += fish.get('description') + '\n'
             price = fish.get('meta').get('display_price').get('with_tax')
-            response += f"{price.get('unit').get('formatted')} per kg\n"
-            response += (f"{fish.get('quantity')}kg in cart for "
-                         f"{price.get('value').get('formatted')}\n\n")
+            product_cart += f"{price.get('unit').get('formatted')} per kg\n"
+            product_cart += (f"{fish.get('quantity')}kg in cart for "
+                             f"{price.get('value').get('formatted')}\n\n")
 
             logger.debug(fish)
             keyboard.append([InlineKeyboardButton(
@@ -241,8 +245,8 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
             .get('with_tax')
             .get('formatted')
         )
-        response += f"Total: {price_formatted}"
-        query.message.reply_text(text=response, reply_markup=reply_markup)
+        product_cart += f"Total: {price_formatted}"
+        query.message.reply_text(text=product_cart, reply_markup=reply_markup)
         return 'HANDLE_CART'
 
 
