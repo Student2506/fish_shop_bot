@@ -31,7 +31,7 @@ def get_product_detail(url, product_id, access_token):
     headers = {
         'Authorization': f'Bearer {access_token}',
     }
-    response = requests.get(url + product_id + '/', headers=headers)
+    response = requests.get(f'{url}{product_id}/', headers=headers)
     response.raise_for_status()
     return response.json().get('data')
 
@@ -51,7 +51,7 @@ def get_cart(url, access_token, client_id='525727537'):
     headers = {
         'Authorization': f'Bearer {access_token}',
     }
-    response = requests.get(url + client_id, headers=headers)
+    response = requests.get(f'{url}{client_id}', headers=headers)
     response.raise_for_status()
     return response.json()
 
@@ -83,7 +83,7 @@ def remove_products_from_cart(url, cart_product_id, access_token, client_id):
         'Authorization': f'Bearer {access_token}',
     }
     response = requests.delete(
-        f'{url}{client_id}/items/' + cart_product_id, headers=headers
+        f'{url}{client_id}/items/{cart_product_id}', headers=headers
     )
     response.raise_for_status()
     return response.json()
@@ -93,7 +93,7 @@ def get_cart_products(url, access_token, client_id):
     headers = {
         'Authorization': f'Bearer {access_token}',
     }
-    response = requests.get(url + client_id + '/items', headers=headers)
+    response = requests.get(f'{url}{client_id}/items', headers=headers)
     response.raise_for_status()
     return response.json()
 
