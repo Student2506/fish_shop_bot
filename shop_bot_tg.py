@@ -31,15 +31,9 @@ def start(update: Update, context: CallbackContext) -> str:
     logger.debug(f'access_token: {access_token}')
     goods = get_catalog('https://api.moltin.com/v2/products', access_token)
     logger.debug(f'goods: {goods}')
-    keyboard = []
-    for good in goods.get('data', None):
-        logger.debug(good.get('name'))
-        logger.debug(good.get('id'))
-        keyboard.append(
-            [InlineKeyboardButton(
-                good.get('name'), callback_data=good.get('id')
-            )]
-        )
+    keyboard = [[InlineKeyboardButton(
+        good.get('name'), callback_data=good.get('id')
+    )] for good in goods.get('data', None)]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text('Please choose: ', reply_markup=reply_markup)
@@ -77,13 +71,12 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
         message_id=query.message.message_id
     )
     context.user_data['chosen'] = query.data
-    quantity_row = []
-    for quantity in (1, 5, 10):
-        quantity_row.append(InlineKeyboardButton(
+    quantity_row = [
+        InlineKeyboardButton(
             f'{quantity} шт.', callback_data=quantity
-        ))
+        ) for quantity in (1, 5, 10)
+    ]
     keyboard = [quantity_row]
-
     keyboard.append([InlineKeyboardButton('Назад', callback_data='Back'), ])
     keyboard.append([InlineKeyboardButton('Корзина', callback_data='Basket')])
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -121,16 +114,9 @@ def handle_description(update: Update, context: CallbackContext) -> str:
     if response == 'Back':
         goods = get_catalog('https://api.moltin.com/v2/products', access_token)
         logger.debug(f'goods: {goods}')
-        keyboard = []
-        for good in goods.get('data', None):
-            logger.debug(good.get('name'))
-            logger.debug(good.get('id'))
-            keyboard.append(
-                [InlineKeyboardButton(
-                    good.get('name'), callback_data=good.get('id')
-                )]
-            )
-
+        keyboard = [[InlineKeyboardButton(
+            good.get('name'), callback_data=good.get('id')
+        )] for good in goods.get('data', None)]
         reply_markup = InlineKeyboardMarkup(keyboard)
         logger.debug(query.message)
         query.message.reply_text('Please choose: ', reply_markup=reply_markup)
@@ -205,14 +191,9 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
         logger.debug('going to menu')
         goods = get_catalog('https://api.moltin.com/v2/products', access_token)
         logger.debug(f'goods: {goods}')
-        keyboard = []
-        for good in goods.get('data', None):
-            logger.debug(good.get('name'))
-            logger.debug(good.get('id'))
-            keyboard.append([InlineKeyboardButton(
-                good.get('name'), callback_data=good.get('id')
-            )])
-
+        keyboard = [[InlineKeyboardButton(
+            good.get('name'), callback_data=good.get('id')
+        )] for good in goods.get('data', None)]
         reply_markup = InlineKeyboardMarkup(keyboard)
         query.message.reply_text('Please choose: ', reply_markup=reply_markup)
         return 'HANDLE_MENU'
