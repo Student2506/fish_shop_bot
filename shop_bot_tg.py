@@ -87,6 +87,7 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     keyboard.append([InlineKeyboardButton('Корзина', callback_data='Basket')])
     reply_markup = InlineKeyboardMarkup(keyboard)
 
+    fish_picture_id = None
     if fish.get("relationships"):
         fish_picture_id = (
             fish
