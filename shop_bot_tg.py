@@ -30,7 +30,7 @@ def start(update: Update, context: CallbackContext) -> str:
     access_token = get_token(
         'https://api.moltin.com/oauth/access_token',
         client_id
-    ).get('access_token', None)
+    )
     logger.debug(f'access_token: {access_token}')
     goods = get_catalog('https://api.moltin.com/v2/products', access_token)
     logger.debug(f'goods: {goods}')
@@ -50,7 +50,7 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     access_token = get_token(
         'https://api.moltin.com/oauth/access_token',
         client_id
-    ).get('access_token', None)
+    )
     fish = get_product_detail(
         'https://api.moltin.com/v2/products/',
         query.data,
@@ -143,7 +143,7 @@ def handle_description(update: Update, context: CallbackContext) -> str:
     access_token = get_token(
         'https://api.moltin.com/oauth/access_token',
         client_id
-    ).get('access_token', None)
+    )
     logger.debug(f'access_token: {access_token}')
     user_choice = query.data
     logger.debug(f'handle_desc: {user_choice}')
@@ -214,7 +214,7 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
     access_token = get_token(
         'https://api.moltin.com/oauth/access_token',
         client_id
-    ).get('access_token', None)
+    )
     if query.data in ('menu', 'Back'):
         logger.debug('going to menu')
         goods = get_catalog('https://api.moltin.com/v2/products', access_token)
@@ -269,7 +269,7 @@ def waiting_email(update: Update, context: CallbackContext) -> None:
     access_token = get_token(
         'https://api.moltin.com/oauth/access_token',
         client_id
-    ).get('access_token', None)
+    )
     user_to_order = (
         f'{update.effective_user.last_name} {update.effective_user.first_name}'
     )

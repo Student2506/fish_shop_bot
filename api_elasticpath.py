@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import requests
@@ -5,15 +6,30 @@ import requests
 logger = logging.getLogger(__name__)
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
+SITE_TOKEN_LIFETIME = None
+SITE_TOKEN = None
+
 
 def get_token(url, client_id):
-    data = {
-        'client_id': client_id,
-        'grant_type': 'implicit'
-    }
-    response = requests.post(url, data=data)
-    response.raise_for_status()
-    return response.json()
+    global SITE_TOKEN
+    global SITE_TOKEN_LIFETIME
+    now = datetime.datetime.now()
+    if SITE_TOKEN and SITE_TOKEN_LIFETIME < datetime.datetime.timestamp(now):
+        return SITE_TOKEN
+    else:
+        data = {
+            'client_id': client_id,
+            'grant_type': 'implicit'
+        }
+        response = requests.post(url, data=data)
+        response.raise_for_status()
+        token = response.json()
+        SITE_TOKEN_LIFETIME = datetime.datetime.timestamp(
+            now + datetime.timedelta(seconds=token.get('expires_in'))
+        )
+        SITE_TOKEN = token.get('access_token')
+
+    return SITE_TOKEN
 
 
 def get_catalog(url, access_token):
