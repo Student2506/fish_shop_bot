@@ -24,9 +24,7 @@ def get_token(url, client_id):
         response = requests.post(url, data=data)
         response.raise_for_status()
         token = response.json()
-        SITE_TOKEN_LIFETIME = datetime.datetime.timestamp(
-            now + datetime.timedelta(seconds=token.get('expires_in'))
-        )
+        SITE_TOKEN_LIFETIME = token.get('expires')
         SITE_TOKEN = token.get('access_token')
 
     return SITE_TOKEN
