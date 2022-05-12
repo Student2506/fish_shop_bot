@@ -113,7 +113,7 @@ def handle_menu(update: Update, context: CallbackContext) -> str:
     return 'HANDLE_DESCRIPTION'
 
 
-def build_list_of_fishes(fishes):
+def build_fishes_menu(fishes):
     keyboard = []
     product_cart = ''
     for fish in fishes:
@@ -183,7 +183,7 @@ def handle_description(update: Update, context: CallbackContext) -> str:
             str(update.effective_user.id)
         )
 
-        product_cart, keyboard = build_list_of_fishes(products.get('data'))
+        product_cart, keyboard = build_fishes_menu(products.get('data'))
         keyboard.append(
             [InlineKeyboardButton('В меню', callback_data='menu'), ]
         )
@@ -232,7 +232,7 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
             str(update.effective_user.id)
         )
 
-        product_cart, keyboard = build_list_of_fishes(products.get('data'))
+        product_cart, keyboard = build_fishes_menu(products.get('data'))
         keyboard.append(
             [InlineKeyboardButton('В меню', callback_data='menu'), ]
         )
@@ -268,7 +268,7 @@ def handle_cart(update: Update, context: CallbackContext) -> str:
             access_token,
             str(update.effective_user.id)
         )
-        product_cart, keyboard = build_list_of_fishes(products.get('data'))
+        product_cart, keyboard = build_fishes_menu(products.get('data'))
         keyboard.append(
             [InlineKeyboardButton('В меню', callback_data='menu'), ]
         )
